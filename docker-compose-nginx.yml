@@ -1,0 +1,24 @@
+version: '3.5'
+# Networks can also be given a custom name (since version 3.5). So for the case below, added name: traefik_default
+
+networks:
+  traefik_default:
+    name: traefik_default
+    driver: bridge
+services:
+  nginx:
+    image: "nginx:latest"
+    container_name: "nginx"
+    labels:
+      traefik.enable: 'true'     # to enable traefik monitoring this nginx container, only then traefik will recognize any changes in the label configuration of this container and will react to it.
+      traefik.http.routers.nginx.entrypoints: "web, websecure"      # in /etc/traefik/traefik.yml 'web' is the name of the entrypoint
+      traefik.http.routers.nginx.rule: Host(`20.216.132.6`)
+      traefik.http.routers.nginx.tls: 'true'
+      traefik.http.routers.nginx.tls.certresolver: production
+# anothey example of syntax for the labels are as follows:
+# labels:
+#   com.example.description: "Accounting webapp"
+#   com.example.department: "Finance"
+#   com.example.label-with-empty-value: ""
+
+

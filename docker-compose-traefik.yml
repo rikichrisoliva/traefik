@@ -1,0 +1,23 @@
+version: '3.5'
+# Networks can also be given a custom name (since version 3.5). So for the case below, added name: traefik_default
+
+volumes:
+  traefik-ssl-certs:    # to store the SSL certs. Anytime you redeploy your container with traefik, you would need to obtain a new SSL cert, and you could hit some rate limit on Let's Encrypt, so we need to store them persistently in a volume  
+    driver: local
+
+networks:
+  traefik_default:
+    name: traefik_default
+    driver: bridge
+services:
+  traefik:
+    image: "traefik:v2.5"
+    container_name: "traefik"
+    ports:
+      - "80:80"
+      - "443:443"
+      # (Optional) Expose Dashboard
+      - "8080:8080"  # Don't do this in production!
+    volumes:
+      - /etc/traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro # this is important when using Docker as the provider because traefik will monitor which containers you will deploy on the Docker server and it will dynamically configure itself (the traefik container itself)
